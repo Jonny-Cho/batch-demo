@@ -32,10 +32,9 @@ public class SimpleJobConfiguration {
     public Step simpleStep1(@Value("#{jobParameters[requestDate]}") final String requestDate) {
         return stepBuilderFactory.get("simpleStep1")
             .tasklet((contribution, chunkContext) -> {
-//                log.info(">>>>>> This its Step1");
-//                log.info(">>>>>> requestDate = {}", requestDate);
-//                return RepeatStatus.FINISHED;
-                throw new IllegalArgumentException("step1에서 실패");
+                log.info(">>>>>> This its Step1");
+                log.info(">>>>>> requestDate = {}", requestDate);
+                return RepeatStatus.FINISHED;
             })
             .build();
     }
