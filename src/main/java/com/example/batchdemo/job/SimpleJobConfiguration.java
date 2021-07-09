@@ -23,15 +23,29 @@ public class SimpleJobConfiguration {
     public Job simpleJob() {
         return jobBuilderFactory.get("simpleJob")
             .start(simpleStep1(null))
+            .next(simpleStep2(null))
             .build();
     }
 
     @Bean
     @JobScope
-    public Step simpleStep1(@Value("#{jobParameters[requestDate]}") String requestDate) {
+    public Step simpleStep1(@Value("#{jobParameters[requestDate]}") final String requestDate) {
         return stepBuilderFactory.get("simpleStep1")
             .tasklet((contribution, chunkContext) -> {
-                log.info(">>>>>> This its Step1");
+//                log.info(">>>>>> This its Step1");
+//                log.info(">>>>>> requestDate = {}", requestDate);
+//                return RepeatStatus.FINISHED;
+                throw new IllegalArgumentException("step1에서 실패");
+            })
+            .build();
+    }
+
+    @Bean
+    @JobScope
+    public Step simpleStep2(@Value("#{jobParameters[requestDate]}") final String requestDate) {
+        return stepBuilderFactory.get("simpleStep2")
+            .tasklet((contribution, chunkContext) -> {
+                log.info(">>>>>> This its Step2");
                 log.info(">>>>>> requestDate = {}", requestDate);
                 return RepeatStatus.FINISHED;
             })
