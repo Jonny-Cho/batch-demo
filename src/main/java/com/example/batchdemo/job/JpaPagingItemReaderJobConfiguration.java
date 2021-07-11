@@ -11,6 +11,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,22 +20,26 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JpaPagingItemReaderJobConfiguration {
 
+    public static final String JOB_NAME = "jpaPagingItemReaderJob";
+    public static final String BEAN_PREFIX = JOB_NAME + "_";
+
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final EntityManagerFactory entityManagerFactory;
 
-    private int chunkSize = 10;
+    @Value("${chunkSize:1000}")
+    private int chunkSize;
 
-    @Bean
+    @Bean(JOB_NAME)
     public Job jpaPagingItemReaderJob() {
-        return jobBuilderFactory.get("jpaPagingItemReaderJob")
+        return jobBuilderFactory.get(JOB_NAME)
             .start(jpaPagingItemReaderStep())
             .build();
     }
 
-    @Bean
+    @Bean(BEAN_PREFIX + "step")
     public Step jpaPagingItemReaderStep() {
-        return stepBuilderFactory.get("jpaPagingItemReaderStep")
+        return stepBuilderFactory.get(BEAN_PREFIX + "step")
             .<Pay, Pay>chunk(chunkSize)
             .reader(jpaPagingItemReader())
             .writer(jpaPagingItemWriter())
@@ -44,7 +49,7 @@ public class JpaPagingItemReaderJobConfiguration {
     @Bean
     public JpaPagingItemReader<Pay> jpaPagingItemReader() {
         return new JpaPagingItemReaderBuilder<Pay>()
-            .name("jpaPagingItemReader")
+            .name(BEAN_PREFIX + "reader")
             .entityManagerFactory(entityManagerFactory)
             .pageSize(chunkSize)
             .queryString("SELECT p FROM Pay p WHERE amount >= 2000")
@@ -52,8 +57,9 @@ public class JpaPagingItemReaderJobConfiguration {
     }
 
     private ItemWriter<Pay> jpaPagingItemWriter() {
-        return list -> {
-            for (Pay pay : list) {
+        // ItemWriter의 write 메서드를 오버라이딩한 익명 클래스 람다식
+        return items -> {
+            for (Pay pay : items) {
                 log.info("Current Pay={}", pay);
             }
         };
