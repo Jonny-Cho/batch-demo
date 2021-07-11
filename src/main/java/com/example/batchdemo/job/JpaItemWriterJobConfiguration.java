@@ -61,7 +61,7 @@ public class JpaItemWriterJobConfiguration {
 
     @Bean
     public JpaItemWriter<Pay2> jpaItemWriter() {
-        JpaItemWriter<Pay2> jpaItemWriter = new JpaItemWriter<>();
+        final JpaItemWriter<Pay2> jpaItemWriter = new JpaItemWriter<>();
         jpaItemWriter.setEntityManagerFactory(entityManagerFactory);
         return jpaItemWriter;
     }

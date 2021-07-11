@@ -76,10 +76,10 @@ public class DeciderJobConfiguration {
     public static class OddDecider implements JobExecutionDecider {
 
         @Override
-        public FlowExecutionStatus decide(JobExecution jobExecution, StepExecution stepExecution) {
-            Random rand = new Random();
+        public FlowExecutionStatus decide(final JobExecution jobExecution, final StepExecution stepExecution) {
+            final Random rand = new Random();
 
-            int randomNumber = rand.nextInt(50) + 1;
+            final int randomNumber = rand.nextInt(50) + 1;
             log.info("랜덤숫자: {}", randomNumber);
 
             if (randomNumber % 2 == 0) {
