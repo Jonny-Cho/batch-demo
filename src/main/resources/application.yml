@@ -9,3 +9,8 @@ spring:
   batch:
     job:
       names: ${job.name:NONE}
+
+  jpa:
+    show_sql: true
+    hibernate:
+      ddl-auto: update
